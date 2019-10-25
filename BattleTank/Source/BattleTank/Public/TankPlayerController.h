@@ -17,6 +17,8 @@ class BATTLETANK_API ATankPlayerController : public APlayerController
 	
 public:
 	ATank* GetControlledTank() const;
+
+	void BeginPlay() override; //override - checks can find method up in hirearchy..
 	
 	
 };
