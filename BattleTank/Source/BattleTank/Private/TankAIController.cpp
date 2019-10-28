@@ -15,8 +15,18 @@ void ATankAIController::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AIController finding player tank : %s"), *(PlayerTank->GetName()));
 	}
-	
-	
+}
+
+void ATankAIController::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if ( !GetControlledTank()) { 
+
+	}
+	else {
+		GetControlledTank()->AimAt(GetPlayerTank()->GetActorLocation());
+	}
 }
 
 ATank* ATankAIController::GetControlledTank() const //ask player controller : what tank are you controlling ?

@@ -19,5 +19,7 @@ private:
 	virtual void BeginPlay() override; //override - checks can find method up in hirearchy..
 	ATank* GetControlledTank() const;
 	ATank* GetPlayerTank() const;
+
+	virtual void Tick(float DeltaTime) override;
 	
 };
