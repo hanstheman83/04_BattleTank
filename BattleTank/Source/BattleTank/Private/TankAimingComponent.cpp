@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "TankAimingComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values for this component's properties
@@ -32,11 +33,37 @@ void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 }
 
-void UTankAimingComponent::AimAt(FVector HitLocation)
+void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 {
-	auto OurTankName = GetOwner()->GetName(); //GetOwner(), up in hierarchy to Tank
-	auto BarrelLocation = Barrel->GetComponentLocation().ToString(); //GetComponentLocation returns FVector
-	UE_LOG(LogTemp, Warning, TEXT("%s aiming at %s from %s"), *OurTankName, *HitLocation.ToString(), *BarrelLocation);
+	if (!Barrel){ return; }
+	FVector OutLaunchVelocity(0);
+	FVector StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
+	// calculate outlaunchvelocity
+	if (UGameplayStatics::SuggestProjectileVelocity(
+		this, 
+		OutLaunchVelocity, 
+		StartLocation,
+		HitLocation,
+		LaunchSpeed,
+		false,
+		0,
+		0,
+		ESuggestProjVelocityTraceOption::DoNotTrace
+		)
+	)
+	{
+		auto AimDirection = OutLaunchVelocity.GetSafeNormal(); // GetSafeNormal() will turn it into Unit Vector!
+		auto TankName = GetOwner()->GetName();
+		UE_LOG(LogTemp, Warning, TEXT("%s aiming at %s"), *TankName, *AimDirection.ToString())
+	}
+
+
+	
+	// auto OurTankName = GetOwner()->GetName(); //GetOwner(), up in hierarchy to Tank
+	// auto BarrelLocation = Barrel->GetComponentLocation().ToString(); //GetComponentLocation returns FVector
+	// UE_LOG(LogTemp, Warning, TEXT("%s aiming at %s from %s"), *OurTankName, *HitLocation.ToString(), *BarrelLocation);
+
+
 }
 
 
