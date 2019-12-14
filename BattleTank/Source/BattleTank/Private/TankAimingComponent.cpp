@@ -2,6 +2,7 @@
 
 #include "TankAimingComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "TankBarrel.h"
 
 
 // Sets default values for this component's properties
@@ -14,23 +15,9 @@ UTankAimingComponent::UTankAimingComponent()
 	// ...
 }
 
-void UTankAimingComponent::SetBarrelReference(UStaticMeshComponent* BarrelToSet) // Setter, to protect private member variable
+void UTankAimingComponent::SetBarrelReference(UTankBarrel* BarrelToSet) // Setter, to protect private member variable
 {
 	Barrel = BarrelToSet;
-}
-
-// Called when the game starts
-void UTankAimingComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-}
-
-// Called every frame
-void UTankAimingComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 }
 
 void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
@@ -39,7 +26,7 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 	FVector OutLaunchVelocity(0);
 	FVector StartLocation = Barrel->GetSocketLocation(FName("Projectile"));
 	// calculate outlaunchvelocity
-	if (UGameplayStatics::SuggestProjectileVelocity(
+	bool bHaveAimSolution = UGameplayStatics::SuggestProjectileVelocity(
 		this, 
 		OutLaunchVelocity, 
 		StartLocation,
@@ -49,21 +36,23 @@ void UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 		0,
 		0,
 		ESuggestProjVelocityTraceOption::DoNotTrace
-		)
-	)
+		);
+	if(bHaveAimSolution)
 	{
 		auto AimDirection = OutLaunchVelocity.GetSafeNormal(); // GetSafeNormal() will turn it into Unit Vector!
 		auto TankName = GetOwner()->GetName();
 		UE_LOG(LogTemp, Warning, TEXT("%s aiming at %s"), *TankName, *AimDirection.ToString())
+		MoveBarrelTowards(AimDirection);
 	}
+}
 
+void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection){
+	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
+	auto AimAsRotator = AimDirection.Rotation();
+	auto DeltaRotator = AimAsRotator - BarrelRotator;
+	UE_LOG(LogTemp, Warning, TEXT("AimAsRotator %s"),*AimAsRotator.ToString())
 
-	
-	// auto OurTankName = GetOwner()->GetName(); //GetOwner(), up in hierarchy to Tank
-	// auto BarrelLocation = Barrel->GetComponentLocation().ToString(); //GetComponentLocation returns FVector
-	// UE_LOG(LogTemp, Warning, TEXT("%s aiming at %s from %s"), *OurTankName, *HitLocation.ToString(), *BarrelLocation);
-
-
+	Barrel->Elevate(5);
 }
 
 
