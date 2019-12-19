@@ -21,6 +21,8 @@ public:
 	// can call function from Blueprint - will get barrel SM in BP
 	UFUNCTION(BlueprintCallable, Category = Setup) // a semicolon at end ; will break UFUNCTIONS!!
 	void SetBarrelReference(UTankBarrel* BarrelToSet);
+	UFUNCTION(BlueprintCallable, Category = Setup) // a semicolon at end ; will break UFUNCTIONS!!
+	void SetTurretReference(UTankTurret* TurretToSet);
 
 protected:
 	UTankAimingComponent* TankAimingComponent = nullptr;
