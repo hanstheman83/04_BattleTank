@@ -16,13 +16,18 @@ class BATTLETANK_API ATank : public APawn
 	GENERATED_BODY()
 
 public:
-	void AimAt(FVector HitLocation);
-
-	// can call function from Blueprint - will get barrel SM in BP
+		// can call function from Blueprint - will get barrel SM in BP
+	// Setters (before other methods)
 	UFUNCTION(BlueprintCallable, Category = Setup) // a semicolon at end ; will break UFUNCTIONS!!
 	void SetBarrelReference(UTankBarrel* BarrelToSet);
 	UFUNCTION(BlueprintCallable, Category = Setup) // a semicolon at end ; will break UFUNCTIONS!!
 	void SetTurretReference(UTankTurret* TurretToSet);
+
+	void AimAt(FVector HitLocation);
+
+	UFUNCTION(BlueprintCallable)
+	void Fire();
+
 
 protected:
 	UTankAimingComponent* TankAimingComponent = nullptr;
@@ -38,6 +43,6 @@ private:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UPROPERTY(EditAnywhere, Category = Firing)
-	float LaunchSpeed = 100000; // 1000 m/s TODO find right speed!
+	float LaunchSpeed = 4000; // 1000 m/s TODO find right speed!
 	
 };
